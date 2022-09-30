@@ -1,0 +1,5 @@
+**/target/*
+
+## Ignoring all instance of Intellij ##
+**/.idea/*
+*.iml

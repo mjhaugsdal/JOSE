@@ -1,5 +1,7 @@
 ﻿using Jose;
 using System;
+using System.IO;
+using System.Reflection;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Security.Cryptography;
@@ -8,20 +10,21 @@ using System.Threading.Tasks;
 
 namespace JOSE
 {
-
-
     class Program
     {
-
         private static JweRecipient recipientRsa1 => new JweRecipient(JweAlgorithm.RSA_OAEP, GetCertificate());
         static HttpClient client = new HttpClient();
 
         static void Main(string[] args)
         {
            
-            String xml = "<m1>Hello world!</m1>";
+            //String xml = "<m1>Hello world!</m1>";
+            var xml = File.ReadAllText("../../../Data/m1.xml");
+
+            
             byte[] payload = System.Text.Encoding.UTF8.GetBytes(xml);
 
+            //The other headers are set by Jose-jwt
             var sharedProtectedHeaders = new Dictionary<string, object>
             {
                 { "cty", "xml"},
@@ -37,18 +40,10 @@ namespace JOSE
                 mode: SerializationMode.Compact,
                 extraProtectedHeaders: sharedProtectedHeaders);
 
-
-
-
-            //Jose.RsaUsingSha rsaUsingSha = new RsaUsingSha("SHA256");
-            //var signed = rsaUsingSha.Sign(jwe, key);
-
             
-            Console.WriteLine(jwe);
+            Console.WriteLine(jwe); //the token, go decode it at jwt.io or something
             var response = send(jwe);
             var result = response.Result;
-
-
 
             //  NET
             //  Encoding: UTF-8
@@ -62,37 +57,49 @@ namespace JOSE
             // *  Address: http://localhost:8890/rest/m1
             //    Http-Method: POST
             //    Content-Type: application/jose
-             //  Headers: {Content-Type=[application/jose], Content-Encoding=[UTF-8], Accept=[]}
-             //
-             //
+            //  Headers: {Content-Type=[application/jose], Content-Encoding=[UTF-8], Accept=[]}
+            //
+            //
 
-            Console.WriteLine("Hello world!");
+            Console.WriteLine(result); //Here should just be encrypted JWE
+
+            var decrypted = JWE.Decrypt(result, PrivKey());
             
+            Console.WriteLine(decrypted.Plaintext); //Here should be plaintext
 
         }
 
+        private static RSA PrivKey()
+        {
+            return X509Private().GetRSAPrivateKey();
+        }
 
         private static RSA GetCertificate()
         {
-            return X509().GetRSAPublicKey();
+            return X509Public().GetRSAPublicKey();
         }
 
-        private static X509Certificate2 X509()
+        //Relative paths in .net .. 
+        private static X509Certificate2 X509Public()
         {
-            return new X509Certificate2("C:/Users/haugsmar/source/repos/JOSE/JOSE/Certificates/server.p12", "changeit");
-            //TODO trenger server sertifikatet
-            //return new X509Certificate2("Certificates/server.p12", "1", X509KeyStorageFlags.Exportable | X509KeyStorageFlags.MachineKeySet);
+            //var path = Path.Combine(Environment.CurrentDirectory, @"..\..\Certificates\", "server.p12");
+            return new X509Certificate2("../../../Certificates/server.cer", "changeit");
         }
 
-        static async Task<Uri> send(String json)
+        private static X509Certificate2 X509Private()
         {
+            //var path = Path.Combine(Environment.CurrentDirectory, @"..\..\Certificates\", "server.p12");
+            return new X509Certificate2("../../../Certificates/client.p12", "changeit");
+        }
 
+        static async Task<string> send(String json)
+        {
             StringContent stringContent = new StringContent(json, System.Text.Encoding.UTF8, "application/jose");
             HttpResponseMessage response = await client.PostAsync("http://localhost:8890/rest/m1", stringContent);
             response.EnsureSuccessStatusCode();
 
             // return URI of the created resource.
-            return response.Headers.Location;
+            return await response.Content.ReadAsStringAsync();
         }
     }
 }
