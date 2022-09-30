@@ -1,4 +1,4 @@
-Some code showing how JWE works.
+Some code showing how JWE could work.
 
 Some of the code in server/.. is not relevant for this case.
 
