@@ -82,13 +82,11 @@ namespace JOSE
         //Relative paths in .net .. 
         private static X509Certificate2 X509Public()
         {
-            //var path = Path.Combine(Environment.CurrentDirectory, @"..\..\Certificates\", "server.p12");
             return new X509Certificate2("../../../Certificates/server.cer", "changeit");
         }
 
         private static X509Certificate2 X509Private()
         {
-            //var path = Path.Combine(Environment.CurrentDirectory, @"..\..\Certificates\", "server.p12");
             return new X509Certificate2("../../../Certificates/client.p12", "changeit");
         }
 
