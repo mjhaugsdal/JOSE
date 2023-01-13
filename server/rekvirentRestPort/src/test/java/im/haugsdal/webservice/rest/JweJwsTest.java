@@ -50,8 +50,8 @@ public class JweJwsTest {
         loggingFeature.setPrettyLogging(true);
         bean.getFeatures().add(loggingFeature);
 
-        //JweWriterInterceptor jweWriterInterceptor = new JweWriterInterceptor();
-        JweJsonWriterInterceptor jweWriterInterceptor = new JweJsonWriterInterceptor();
+        JweWriterInterceptor jweWriterInterceptor = new JweWriterInterceptor();
+        //JweJsonWriterInterceptor jweWriterInterceptor = new JweJsonWriterInterceptor();
         jweWriterInterceptor.setUseJweOutputStream(true);
 
         JwsWriterInterceptor jwsWriterInterceptor = new JwsWriterInterceptor();

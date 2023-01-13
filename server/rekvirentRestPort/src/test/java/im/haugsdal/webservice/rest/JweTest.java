@@ -1,11 +1,14 @@
 package im.haugsdal.webservice.rest;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
-import java.util.LinkedList;
-import java.util.List;
-import javax.ws.rs.client.ResponseProcessingException;
+import org.apache.cxf.feature.LoggingFeature;
+import org.apache.cxf.jaxrs.client.JAXRSClientFactoryBean;
+import org.apache.cxf.jaxrs.client.WebClient;
+import org.apache.cxf.rs.security.jose.jaxrs.JweClientResponseFilter;
+import org.apache.cxf.rs.security.jose.jaxrs.JweWriterInterceptor;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+import types.M1;
+
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -15,20 +18,11 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
-import org.apache.cxf.feature.LoggingFeature;
-import org.apache.cxf.jaxrs.client.JAXRSClientFactoryBean;
-import org.apache.cxf.jaxrs.client.WebClient;
-import org.apache.cxf.rs.security.jose.jaxrs.JweClientResponseFilter;
-import org.apache.cxf.rs.security.jose.jaxrs.JweWriterInterceptor;
-import org.apache.cxf.rs.security.jose.jwe.JweException;
-import org.apache.cxf.rs.security.jose.jws.JwsException;
-import org.eclipse.jetty.server.Response;
-import org.jsoup.Jsoup;
-import org.testng.Assert;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
-import types.M1;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
+import java.util.LinkedList;
+import java.util.List;
 
 public class JweTest {
 
@@ -64,19 +58,19 @@ public class JweTest {
         bean.setProviders(providers);
 
         bean.getProperties(true).put("rs.security.encryption.out.properties",
-            "jwe/client/client.properties");
+                "jwe/client/client.properties");
         /*bean.getProperties(true).put("rs.security.signature.out.properties",
             "jwe/client/client-sign.properties");*/
         bean.getProperties(true).put("rs.security.encryption.in.properties",
-            "jwe/client/client-in.properties");
+                "jwe/client/client-in.properties");
         /*bean.getProperties(true).put("rs.security.signature.in.properties",
             "jwe/client/client-in-sign.properties");*/
 
         bean.getProperties(true).put("jose.debug", true);
 
         WebClient client = bean.createWebClient()
-            .type("application/xml; charset=UTF-8")
-            .encoding("UTF-8");
+                .type("application/xml; charset=UTF-8")
+                .encoding("UTF-8");
 
         client.encoding("UTF-8");
 

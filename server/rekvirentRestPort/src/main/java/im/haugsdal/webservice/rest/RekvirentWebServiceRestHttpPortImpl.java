@@ -1,47 +1,19 @@
 package im.haugsdal.webservice.rest;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Properties;
-
 import im.haugsdal.M1Service;
 import im.haugsdal.webservice.rest.filters.CustomJwsContainerRequestFilter;
 import im.haugsdal.webservice.rest.interceptors.CustomJweWriterInterceptor;
 import org.apache.cxf.feature.LoggingFeature;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
-import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 import org.apache.cxf.rs.security.jose.jaxrs.JweContainerRequestFilter;
-import org.apache.cxf.rs.security.jose.jaxrs.JweWriterInterceptor;
 import org.apache.cxf.rs.security.jose.jaxrs.JwsWriterInterceptor;
-import org.apache.cxf.rs.security.jose.jaxrs.JwtAuthenticationClientFilter;
-import org.apache.cxf.rs.security.jose.jaxrs.JwtAuthenticationFilter;
-import org.apache.cxf.rs.security.jose.jwe.JweJwtCompactConsumer;
-import org.apache.cxf.rs.security.jose.jwe.JweJwtCompactProducer;
-import org.apache.cxf.rs.security.jose.jwt.JoseJwtProducerConsumer;
-import types.AppRec;
-import types.AppRecFault;
-import types.M1;
-import types.M24_1;
-import types.M24_2;
-import types.M25_1;
-import types.M27_1;
-import types.M27_2;
-import types.M4_1;
-import types.M4_2;
-import types.M5;
-import types.M95Kj;
-import types.M96Kj;
-import types.M9_11;
-import types.M9_12;
-import types.M9_21;
-import types.M9_22;
-import types.M9_5;
-import types.M9_6;
-import types.M9_7;
-import types.M9_8;
-import types.MV;
+import types.*;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Properties;
 
 public class RekvirentWebServiceRestHttpPortImpl implements RekvirentWebServiceRestHttpPort {
 
@@ -64,24 +36,24 @@ public class RekvirentWebServiceRestHttpPortImpl implements RekvirentWebServiceR
 
         var jweContainerRequestFilter = new JweContainerRequestFilter();
 
-        /*Properties properties = new Properties();
+        Properties properties = new Properties();
         try {
             properties.load(RekvirentWebServiceRestHttpPortImpl.class.getClassLoader().getResourceAsStream("jwe/server/server.properties"));
         } catch (IOException e) {
             e.printStackTrace();
-        }*/
+        }
 
-        //CustomJwsContainerRequestFilter jwsContainerRequestFilter = new CustomJwsContainerRequestFilter();
-        //CustomJweWriterInterceptor jweWriterInterceptor = new CustomJweWriterInterceptor(properties); //This combined with CustomJwsWriterInterceptor implements encryption using request signing certificate
-        JweWriterInterceptor jweWriterInterceptor = new JweWriterInterceptor();
-        jweWriterInterceptor.setUseJweOutputStream(true);
-        //JwsWriterInterceptor jwsWriterInterceptor = new JwsWriterInterceptor();
-        //jwsWriterInterceptor.setUseJwsOutputStream(true);
+        CustomJwsContainerRequestFilter jwsContainerRequestFilter = new CustomJwsContainerRequestFilter();
+        CustomJweWriterInterceptor jweWriterInterceptor = new CustomJweWriterInterceptor(properties); //This combined with CustomJwsWriterInterceptor implements encryption using request signing certificate
+        //JweWriterInterceptor jweWriterInterceptor = new JweWriterInterceptor();
+        //jweWriterInterceptor.setUseJweOutputStream(true);
+        JwsWriterInterceptor jwsWriterInterceptor = new JwsWriterInterceptor();
+        jwsWriterInterceptor.setUseJwsOutputStream(true);
 
         providers.add(jweContainerRequestFilter);
-        //providers.add(jwsContainerRequestFilter);
+        providers.add(jwsContainerRequestFilter);
         providers.add(jweWriterInterceptor);
-        //providers.add(jwsWriterInterceptor);
+        providers.add(jwsWriterInterceptor);
 
         serverFactoryBean.setProviders(providers);
 
@@ -93,12 +65,12 @@ public class RekvirentWebServiceRestHttpPortImpl implements RekvirentWebServiceR
             "jwe/server/server-out.properties");
 
         //SIGNATURE IN
-        /*serverFactoryBean.getProperties(true).put("rs.security.signature.in.properties",
-            "jwe/server/server-sign.properties");*/
+        serverFactoryBean.getProperties(true).put("rs.security.signature.in.properties",
+            "jwe/server/server-sign.properties");
 
         //SIGNATURE OUT
-        /*serverFactoryBean.getProperties(true).put("rs.security.signature.out.properties",
-            "jwe/server/server-out-sign.properties");*/
+        serverFactoryBean.getProperties(true).put("rs.security.signature.out.properties",
+            "jwe/server/server-out-sign.properties");
 
         serverFactoryBean.getProperties(true).put("jose.debug", true);
 
