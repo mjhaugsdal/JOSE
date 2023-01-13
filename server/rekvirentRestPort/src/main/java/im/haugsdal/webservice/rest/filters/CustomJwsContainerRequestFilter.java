@@ -23,6 +23,7 @@ import java.security.cert.X509Certificate;
 import javax.ws.rs.container.ContainerRequestFilter;
 
 import im.haugsdal.webservice.rest.context.CustomSecurityContext;
+import org.apache.cxf.phase.PhaseInterceptorChain;
 import org.apache.cxf.rs.security.jose.jaxrs.JwsContainerRequestFilter;
 import org.apache.cxf.rs.security.jose.jws.JwsSignatureVerifier;
 import org.apache.cxf.rs.security.jose.jws.PublicKeyJwsSignatureVerifier;
@@ -39,10 +40,10 @@ public class CustomJwsContainerRequestFilter extends JwsContainerRequestFilter i
      */
     @Override
     protected CustomSecurityContext configureSecurityContext(JwsSignatureVerifier sigVerifier) {
-        if (sigVerifier instanceof PublicKeyJwsSignatureVerifier
-            && ((PublicKeyJwsSignatureVerifier)sigVerifier).getX509Certificate() != null) {
+        if (sigVerifier instanceof PublicKeyJwsSignatureVerifier publicKeyJwsSignatureVerifier
+            && (publicKeyJwsSignatureVerifier).getX509Certificate() != null) {
             final Principal principal =
-                ((PublicKeyJwsSignatureVerifier)sigVerifier).getX509Certificate().getSubjectX500Principal();
+                (publicKeyJwsSignatureVerifier).getX509Certificate().getSubjectX500Principal();
             return new CustomSecurityContext() {
 
                 @Override
@@ -57,7 +58,7 @@ public class CustomJwsContainerRequestFilter extends JwsContainerRequestFilter i
 
                 @Override
                 public X509Certificate getRequestSigningCertificate() {
-                    return ((PublicKeyJwsSignatureVerifier) sigVerifier).getX509Certificate();
+                    return (publicKeyJwsSignatureVerifier).getX509Certificate();
                 }
             };
         }

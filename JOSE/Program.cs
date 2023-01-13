@@ -41,9 +41,10 @@ namespace JOSE
            
 
 
+
             // Provide custom Content-Type and content. "application/jose+json" is only choosen as an example.
             // Create header based on supplied information. Exceptions may be thrown if required content is not proivided by the JWKProvider
-            var joseHeader = new ProtectedJoseHeader(jwk, "application/jose", SerializationOption.JwsCompactSerialization);
+            var joseHeader = new ProtectedJoseHeader(jwk, "application/xml", SerializationOption.JwsCompactSerialization);
             var payload = Encoding.UTF8.GetBytes(xml);
 
             // Initialize JWS
@@ -52,6 +53,7 @@ namespace JOSE
             // Create digital signature
             jws.CalculateSignature();
             var jwsSignature = jws.Export();
+
 
             Console.WriteLine("Created JSON Web Signature: " + jwsSignature);
 
@@ -74,6 +76,7 @@ namespace JOSE
             
 
             Console.WriteLine(jwe); //the token, go decode it at jwt.io or something
+
 
 
 
